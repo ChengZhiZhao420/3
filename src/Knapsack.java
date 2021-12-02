@@ -1,13 +1,29 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Scanner;
+
 public class Knapsack {
     private int[] profits;
     private int[] weights;
     private int capacity;
     private int[] fractionProfits;
 
-    public Knapsack(){
-        this.capacity = 16;
-        this.profits = new int[]{40, 30, 50, 10};
-        this.weights = new int[]{2, 5, 10, 5};
+    public Knapsack(int capacity) throws FileNotFoundException {
+        Scanner sc = new Scanner((new BufferedReader((new FileReader("./src/Knapsack.txt")))));
+        String[] line = sc.nextLine().trim().split(" ");
+        this.capacity = capacity;
+        this.profits = new int[line.length];
+        this.weights = new int[line.length];
+
+        for (int i = 0; i < line.length; i++){
+            profits[i] = Integer.parseInt(line[i]);
+        }
+
+        line = sc.nextLine().trim().split(" ");
+        for (int j = 0; j < line.length; j++){
+            weights[j] = Integer.parseInt(line[j]);
+        }
     }
 
     public void solve(){
@@ -20,6 +36,7 @@ public class Knapsack {
         while(!queue.isEmpty()){
             Node out = queue.peek();
             queue.dequeue();
+            System.out.println("Parent node: Weight(" + out.weight + "), Profit(" + out.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(out) + ")");
 
             level = out.level + 1;
             int weight = out.weight + weights[level];
@@ -31,6 +48,7 @@ public class Knapsack {
             }
             if(bound(in) > maxProfit){
                 queue.enqueue(in);
+                System.out.println("Left child node: Weight(" + in.weight + "), Profit(" + in.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(in) + ")");
             }
 
             weight = out.weight;
@@ -38,10 +56,12 @@ public class Knapsack {
             Node in2 = new Node(weight, level, profit);
             if(bound(in2) > maxProfit){
                 queue.enqueue(in2);
+                System.out.println("Right child node: Weight(" + in2.weight + "), Profit(" + in2.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(in2) + ")");
             }
+            System.out.println("----------------------------------------------------");
         }
 
-        System.out.println(maxProfit);
+        System.out.println("Maximum profit of this knapsack problem is: " + maxProfit);
     }
 
     private float bound(Node in) {

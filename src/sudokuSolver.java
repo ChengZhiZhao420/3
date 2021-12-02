@@ -6,6 +6,10 @@ import java.util.Scanner;
 public class sudokuSolver {
     private int[][] sdk;
 
+    /**
+     * Initialize the sudoku broad from reading the text file
+     * @throws FileNotFoundException if the file is not found
+     */
     public sudokuSolver() throws FileNotFoundException {
         sdk = new int[9][9];
         Scanner sc = new Scanner((new BufferedReader((new FileReader("./src/test.txt")))));
@@ -21,6 +25,10 @@ public class sudokuSolver {
         }
     }
 
+    /**
+     * Try to fit 1 to 9 to the sudoku using recursion, if the value is not valid on the broad, then go back to last one to try another value
+     * @return True if valid
+     */
     public boolean solve(){
         int[] emptySpace = findEmpty();
 
