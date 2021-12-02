@@ -9,6 +9,11 @@ public class Knapsack {
     private int capacity;
     private int[] fractionProfits;
 
+    /**
+     * Reading from file, parse weight and profit from it
+     * @param capacity capacity of knapsack problem
+     * @throws FileNotFoundException if the file is not found
+     */
     public Knapsack(int capacity) throws FileNotFoundException {
         Scanner sc = new Scanner((new BufferedReader((new FileReader("./src/Knapsack.txt")))));
         String[] line = sc.nextLine().trim().split(" ");
@@ -26,6 +31,9 @@ public class Knapsack {
         }
     }
 
+    /**
+     * Branch and bound
+     */
     public void solve(){
         int maxProfit = 0;
         int level = -1;
@@ -39,23 +47,23 @@ public class Knapsack {
             System.out.println("Parent node: Weight(" + out.weight + "), Profit(" + out.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(out) + ")");
 
             level = out.level + 1;
-            int weight = out.weight + weights[level];
-            int profit = out.profit + profits[level];
-            Node in = new Node(weight, level, profit);
+            int weight = out.weight + weights[level];// left child node's weight = parent node's weight + child node's weight
+            int profit = out.profit + profits[level];// left child node's profit = parent node's profit + child node's profit
+            Node in = new Node(weight, level, profit);// left child node
 
-            if(weight <= capacity && profit > maxProfit){
+            if(weight <= capacity && profit > maxProfit){// find the maximum profit
                 maxProfit = profit;
             }
-            if(bound(in) > maxProfit){
-                queue.enqueue(in);
+            if(bound(in) > maxProfit){//if the bound of left child is larger than max profit
+                queue.enqueue(in);//enqueue this node
                 System.out.println("Left child node: Weight(" + in.weight + "), Profit(" + in.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(in) + ")");
             }
 
-            weight = out.weight;
+            weight = out.weight;//right child node have same property as parent
             profit = out.profit;
             Node in2 = new Node(weight, level, profit);
-            if(bound(in2) > maxProfit){
-                queue.enqueue(in2);
+            if(bound(in2) > maxProfit){//if the bound of right child is larger than max profit
+                queue.enqueue(in2);//enqueue this node
                 System.out.println("Right child node: Weight(" + in2.weight + "), Profit(" + in2.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(in2) + ")");
             }
             System.out.println("----------------------------------------------------");
@@ -64,6 +72,11 @@ public class Knapsack {
         System.out.println("Maximum profit of this knapsack problem is: " + maxProfit);
     }
 
+    /**
+     * measuring the bound of the node from its level
+     * @param in node
+     * @return bound
+     */
     private float bound(Node in) {
         int i = 0, j = 0;
         int totalWeight;
@@ -76,7 +89,7 @@ public class Knapsack {
             result = in.profit;
             j = in.level + 1;
             totalWeight = in.weight;
-            while (j < profits.length && totalWeight + weights[j] <= capacity){
+            while (j < profits.length && totalWeight + weights[j] <= capacity){//calculating the bound from the input node level to the other level until the total weight plus next level's weight is full
                 totalWeight = totalWeight + weights[j];
                 result += profits[j];
                 j++;
@@ -84,8 +97,8 @@ public class Knapsack {
         }
         i = j;
 
-        if(i < profits.length){
-            result += (capacity - totalWeight) * (profits[i]/weights[i]);
+        if(i < profits.length){//the capacity no full yet, still have room from part of the item to fit in
+            result += (capacity - totalWeight) * (profits[i]/weights[i]);//fraction of the item
         }
         return result;
     }

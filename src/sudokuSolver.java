@@ -49,6 +49,9 @@ public class sudokuSolver {
         return false;
     }
 
+    /**
+     * Print the final sudoku result
+     */
     public void print(){
         for(int i = 0; i < sdk.length; i++){
             for(int j = 0; j < sdk.length; j++){
@@ -58,6 +61,10 @@ public class sudokuSolver {
         }
     }
 
+    /**
+     * Checking on which node is empty
+     * @return the position of the node
+     */
     public int[] findEmpty(){
         int[] result = new int[2];
         result[0] = -1;
@@ -75,11 +82,18 @@ public class sudokuSolver {
         return result;
     }
 
+    /**
+     * checking if this number can be fit into the node
+     * @param i y-axis of that node
+     * @param j x-axis of that node
+     * @param num 1 to 9
+     * @return true if that is valid
+     */
     public boolean checkValid(int i, int j, int num){
         int x = j / 3;
         int y = i / 3;
 
-
+        //checking row
         for(int q = 0; q < sdk.length; q++){
             if(q == i){
                 continue;
@@ -90,7 +104,7 @@ public class sudokuSolver {
                 }
             }
         }
-
+        //checking column
         for(int k = 0; k < sdk.length; k++){
             if(k == j){
                 continue;
@@ -102,6 +116,7 @@ public class sudokuSolver {
             }
         }
 
+        //checking 3*3 of sudoku
         for(int o = y * 3; o < y * 3 + 3; o++){
             for(int q = x * 3; q < x * 3 + 3; q++){
                 if(j == o && i == q){
