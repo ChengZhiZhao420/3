@@ -1,0 +1,8 @@
+1. sudokuSolver, (Initializing: reading the 9x9 sudoku board from the text file)
+    1)solving the sudoku problem using back tracking
+    2)use solve() method to begin solve the problem
+    3)use print() method to print the final result
+
+2. Knapsack, (Initializing: reading the weights and profits from the ext file)
+    1)solving the knapsack problem by using bench and bound
+    2)use solve() method to solve the problem, each run will be print out the current weight and maximum profit and bound of the node
