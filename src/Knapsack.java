@@ -1,12 +1,13 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class Knapsack {
-    private int[] profits;
-    private int[] weights;
-    private int capacity;
+    private static int[] profits;
+    private static int[] weights;
+    private static int capacity;
 
     /**
      * Reading from file, parse weight and profit from it
@@ -37,33 +38,37 @@ public class Knapsack {
         int maxProfit = 0;
         int level = -1;
         Node node1 = new Node(0, level, 0);
-        Queue queue = new Queue();
-        queue.enqueue(node1);
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+        queue.add(node1);
 
         while(!queue.isEmpty()){
             Node out = queue.peek();
-            queue.dequeue();
-            System.out.println("Parent node: Weight(" + out.weight + "), Profit(" + out.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(out) + "), level(" + out.level + ")");
+            queue.poll();
+            out.setBound();
+            System.out.println("Parent node: Weight(" + out.weight + "), Profit(" + out.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + out.getBound() + "), level(" + out.level + ")");
 
             level = out.level + 1;
             int weight = out.weight + weights[level];// left child node's weight = parent node's weight + child node's weight
             int profit = out.profit + profits[level];// left child node's profit = parent node's profit + child node's profit
             Node in = new Node(weight, level, profit);// left child node
+            in.setBound();
 
             if(weight <= capacity && profit > maxProfit){// find the maximum profit
                 maxProfit = profit;
             }
-            if(bound(in) > maxProfit){//if the bound of left child is larger than max profit
-                queue.enqueue(in);//enqueue this node
-                System.out.println("Left child node: Weight(" + in.weight + "), Profit(" + in.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(in) + "), level(" + in.level + ")");
+            if(in.getBound() > maxProfit){//if the bound of left child is larger than max profit
+                queue.add(in);//enqueue this node
+                System.out.println("Left child node: Weight(" + in.weight + "), Profit(" + in.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + in.getBound() + "), level(" + in.level + ")");
             }
 
             weight = out.weight;//right child node have same property as parent
             profit = out.profit;
             Node in2 = new Node(weight, level, profit);
-            if(bound(in2) > maxProfit){//if the bound of right child is larger than max profit
-                queue.enqueue(in2);//enqueue this node
-                System.out.println("Right child node: Weight(" + in2.weight + "), Profit(" + in2.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + bound(in2) + "), level(" + out.level + ")");
+            in2.setBound();
+
+            if(in2.getBound() > maxProfit){//if the bound of right child is larger than max profit
+                queue.add(in2);//enqueue this node
+                System.out.println("Right child node: Weight(" + in2.weight + "), Profit(" + in2.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + in2.getBound() + "), level(" + out.level + ")");
             }
             System.out.println("----------------------------------------------------");
         }
@@ -71,41 +76,13 @@ public class Knapsack {
         System.out.println("Maximum profit of this knapsack problem is: " + maxProfit);
     }
 
-    /**
-     * measuring the bound of the node from its level
-     * @param in node
-     * @return bound
-     */
-    private float bound(Node in) {
-        int i = 0, j = 0;
-        int totalWeight;
-        float result;
 
-        if(in.weight >= capacity){
-            return 0;
-        }
-        else{
-            result = in.profit;
-            j = in.level + 1;
-            totalWeight = in.weight;
-            while (j < profits.length && totalWeight + weights[j] <= capacity){//calculating the bound from the input node level to the other level until the total weight plus next level's weight is full
-                totalWeight = totalWeight + weights[j];
-                result += profits[j];
-                j++;
-            }
-        }
-        i = j;
 
-        if(i < profits.length){//the capacity no full yet, still have room from part of the item to fit in
-            result += (float)((capacity - totalWeight) * (profits[i]/weights[i]));//fraction of the item
-        }
-        return result;
-    }
-
-    static class Node{
+    static class Node implements Comparable<Node>{
         private int weight;
         private int level;
         private int profit;
+        private float bound;
         private Node next;
 
         public Node(int weight, int level, int profit){
@@ -120,6 +97,50 @@ public class Knapsack {
 
         public Node getNext(){
             return next;
+        }
+
+        /**
+         * measuring the bound of the node from its level
+         * @return bound
+         */
+        public void setBound() {
+            int i = 0, j = 0;
+            int totalWeight = 0;
+            float result = 0;
+
+            if(weight >= capacity){
+                bound = 0;
+            }
+            else{
+                result = profit;
+                j = level + 1;
+                totalWeight = weight;
+                while (j < profits.length && totalWeight + weights[j] <= capacity){//calculating the bound from the input node level to the other level until the total weight plus next level's weight is full
+                    totalWeight = totalWeight + weights[j];
+                    result += profits[j];
+                    j++;
+                }
+            }
+            i = j;
+
+            if(i < profits.length){//the capacity no full yet, still have room from part of the item to fit in
+                result += (float)((capacity - totalWeight) * (profits[i]/weights[i]));//fraction of the item
+            }
+            bound = result;
+        }
+
+        public float getBound(){
+            return bound;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            if(this.bound > o.bound){
+                return 1;
+            }
+            else{
+                return -1;
+            }
         }
     }
 
