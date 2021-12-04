@@ -18,8 +18,8 @@ public class Knapsack {
         Scanner sc = new Scanner((new BufferedReader((new FileReader("./src/Knapsack.txt")))));
         String[] line = sc.nextLine().trim().split(" ");
         this.capacity = capacity;
-        this.profits = new int[line.length];
-        this.weights = new int[line.length];
+        profits = new int[line.length];
+        weights = new int[line.length];
 
         for (int i = 0; i < line.length; i++){
             profits[i] = Integer.parseInt(line[i]);
@@ -43,7 +43,7 @@ public class Knapsack {
 
         while(!queue.isEmpty()){
             Node out = queue.peek();
-            queue.poll();
+            queue.remove();
             out.setBound();
             System.out.println("Parent node: Weight(" + out.weight + "), Profit(" + out.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + out.getBound() + "), level(" + out.level + ")");
 
@@ -101,17 +101,13 @@ public class Knapsack {
 
         /**
          * measuring the bound of the node from its level
-         * @return bound
          */
         public void setBound() {
-            int i = 0, j = 0;
-            int totalWeight = 0;
+            int i, j;
+            int totalWeight;
             float result = 0;
 
-            if(weight >= capacity){
-                bound = 0;
-            }
-            else{
+            if(weight < capacity){
                 result = profit;
                 j = level + 1;
                 totalWeight = weight;
@@ -120,12 +116,14 @@ public class Knapsack {
                     result += profits[j];
                     j++;
                 }
-            }
-            i = j;
 
-            if(i < profits.length){//the capacity no full yet, still have room from part of the item to fit in
-                result += (float)((capacity - totalWeight) * (profits[i]/weights[i]));//fraction of the item
+                i = j;
+
+                if(i < profits.length){//the capacity no full yet, still have room from part of the item to fit in
+                    result += (float)((capacity - totalWeight) * (profits[i]/weights[i]));//fraction of the item
+                }
             }
+
             bound = result;
         }
 
