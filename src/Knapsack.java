@@ -68,7 +68,7 @@ public class Knapsack {
 
             if(in2.getBound() > maxProfit){//if the bound of right child is larger than max profit
                 queue.add(in2);//enqueue this node
-                System.out.println("Right child node: Weight(" + in2.weight + "), Profit(" + in2.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + in2.getBound() + "), level(" + out.level + ")");
+                System.out.println("Right child node: Weight(" + in2.weight + "), Profit(" + in2.profit + "), Maximum Profit(" + maxProfit + "), Bound(" + in2.getBound() + "), level(" + in2.level + ")");
             }
             System.out.println("----------------------------------------------------");
         }
@@ -89,14 +89,6 @@ public class Knapsack {
             this.weight = weight;
             this.level = level;
             this.profit = profit;
-        }
-
-        public void setNext(Node node){
-            next = node;
-        }
-
-        public Node getNext(){
-            return next;
         }
 
         /**
